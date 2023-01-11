@@ -8,7 +8,8 @@ namespace ?= camunda
 .PHONY: all
 all: install-keycloak
 
-# 1 install keycloak (and corresponding postgres db)
+# Cluster #1
+# 1 install keycloak (and corresponding postgres db) into one cluster
 .PHONY: install-keycloak
 install-keycloak:
 	-kubectl create namespace $(namespace)
