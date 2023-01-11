@@ -1,0 +1,34 @@
+---
+# Source: camunda-platform/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: camunda-camunda-platform
+  labels:
+    app: camunda-platform
+    app.kubernetes.io/name: camunda-platform
+    app.kubernetes.io/instance: camunda
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: camunda-platform
+    helm.sh/chart: camunda-platform-8.1.3
+    app.kubernetes.io/version: "8.1.2"
+  annotations: 
+    ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: keycloak.upgradingdave.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: camunda-keycloak
+                port:
+                  number: 80
+            path: /auth
+            pathType: Prefix
+  tls:
+    - hosts:
+        - keycloak.upgradingdave.com
+      secretName: tls-secret

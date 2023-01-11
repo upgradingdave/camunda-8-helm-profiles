@@ -1,0 +1,27 @@
+---
+# Source: camunda-platform/charts/identity/charts/keycloak/templates/configmap-env-vars.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: camunda-keycloak-env-vars
+  namespace: camunda
+  labels:
+    app.kubernetes.io/name: keycloak
+    helm.sh/chart: keycloak-7.1.6
+    app.kubernetes.io/instance: camunda
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: keycloak
+data:
+  KEYCLOAK_CREATE_ADMIN_USER: "true"
+  KEYCLOAK_ADMIN_USER: "admin"
+  KEYCLOAK_MANAGEMENT_USER: "manager"
+  KEYCLOAK_HTTP_PORT: "8080"
+  KEYCLOAK_PROXY_ADDRESS_FORWARDING: "false"
+  KEYCLOAK_ENABLE_STATISTICS: "false"
+  KEYCLOAK_DATABASE_HOST: "camunda-postgresql"
+  KEYCLOAK_DATABASE_PORT: "5432"
+  KEYCLOAK_DATABASE_NAME: "bitnami_keycloak"
+  KEYCLOAK_DATABASE_USER: "bn_keycloak"
+  KEYCLOAK_CACHE_OWNERS_COUNT: "1"
+  KEYCLOAK_AUTH_CACHE_OWNERS_COUNT: "1"
+  KEYCLOAK_ENABLE_TLS: "false"

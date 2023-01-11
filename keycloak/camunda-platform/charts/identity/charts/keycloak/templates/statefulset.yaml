@@ -1,0 +1,141 @@
+---
+# Source: camunda-platform/charts/identity/charts/keycloak/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: camunda-keycloak
+  namespace: camunda
+  labels:
+    app.kubernetes.io/name: keycloak
+    helm.sh/chart: keycloak-7.1.6
+    app.kubernetes.io/instance: camunda
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: keycloak
+spec:
+  replicas: 1
+  podManagementPolicy: Parallel
+  serviceName: camunda-keycloak-headless
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  selector:
+    matchLabels: 
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/instance: camunda
+      app.kubernetes.io/component: keycloak
+  template:
+    metadata:
+      annotations:
+        checksum/configmap-env-vars: 9d5f743bd8068b5a14717db8d5e076747c7ca7d50777e80a0eb5142fcfbc6e12
+        checksum/secrets: 9298ac2f0b3cd21160fb89572a3ae1ffe50c637ea199d1aa331eab79d6efec39
+      labels:
+        app.kubernetes.io/name: keycloak
+        helm.sh/chart: keycloak-7.1.6
+        app.kubernetes.io/instance: camunda
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: keycloak
+    spec:
+      serviceAccountName: camunda-keycloak
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: keycloak
+                    app.kubernetes.io/instance: camunda
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+      initContainers:
+        - command:
+          - sh
+          - -c
+          - cp -a /app/keycloak-theme/* /mnt
+          image: 'camunda/identity:8.1.2'
+          imagePullPolicy: 'IfNotPresent'
+          name: copy-camunda-theme
+          volumeMounts:
+          - mountPath: /mnt
+            name: camunda-theme
+      containers:
+        - name: keycloak
+          image: docker.io/bitnami/keycloak:16.1.1-debian-10-r52
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+          env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: camunda-keycloak
+                  key: admin-password
+            - name: KEYCLOAK_MANAGEMENT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: camunda-keycloak
+                  key: management-password
+            - name: KEYCLOAK_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: camunda-postgresql
+                  key: password
+            - name: KEYCLOAK_PROXY_ADDRESS_FORWARDING
+              value: "true"
+            - name: KEYCLOAK_FRONTEND_URL
+              value: https://keycloak.upgradingdave.com/auth
+          envFrom:
+            - configMapRef:
+                name: camunda-keycloak-env-vars
+          resources:
+            limits: {}
+            requests: {}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            - name: http-management
+              containerPort: 9990
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 300
+            periodSeconds: 1
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /auth/
+              port: http
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+            httpGet:
+              path: /auth/realms/master
+              port: http
+          volumeMounts:
+            - mountPath: /opt/bitnami/keycloak/themes/identity
+              name: camunda-theme
+      volumes:
+        - emptyDir:
+            sizeLimit: 10Mi
+          name: camunda-theme
