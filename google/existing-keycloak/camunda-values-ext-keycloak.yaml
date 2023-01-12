@@ -18,17 +18,16 @@ global:
   identity:
     auth:
       publicIssuerUrl: "https://keycloak.upgradingdave.com/auth/realms/camunda-platform"
-      identity:
-        keycloak:
-          url:
-            protocol: "https:"
-            host: "keycloak.upgradingdave.com"
-            port: "443"
-        contextPath: "/auth"
-        auth:
-          adminUser: "admin"
-          existingSecret: "camunda-keycloak"
-          existingSecretKey: "admin-password"
+    keycloak:
+      url:
+        protocol: "https:"
+        host: "keycloak.upgradingdave.com"
+        port: "443"
+      contextPath: "/auth"
+      auth:
+        adminUser: "admin"
+        existingSecret: "camunda-keycloak"
+        existingSecretKey: "admin-password"
       operate:
         redirectUrl: "https://camunda.upgradingdave.com/operate"
       tasklist:
