@@ -20,7 +20,7 @@ global:
       publicIssuerUrl: "https://keycloak.upgradingdave.com/auth/realms/camunda-platform"
     keycloak:
       url:
-        protocol: "https:"
+        protocol: "https"
         host: "keycloak.upgradingdave.com"
         port: "443"
       contextPath: "/auth"
