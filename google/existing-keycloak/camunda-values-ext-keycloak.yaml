@@ -18,6 +18,12 @@ global:
   identity:
     auth:
       publicIssuerUrl: "https://keycloak.upgradingdave.com/auth/realms/camunda-platform"
+      operate:
+        redirectUrl: "https://camunda.upgradingdave.com/operate"
+      tasklist:
+        redirectUrl: "https://camunda.upgradingdave.com/tasklist"
+      optimize:
+        redirectUrl: "https://camunda.upgradingdave.com/optimize"
     keycloak:
       url:
         protocol: "https"
@@ -28,12 +34,6 @@ global:
         adminUser: "admin"
         existingSecret: "camunda-keycloak"
         existingSecretKey: "admin-password"
-      operate:
-        redirectUrl: "https://camunda.upgradingdave.com/operate"
-      tasklist:
-        redirectUrl: "https://camunda.upgradingdave.com/tasklist"
-      optimize:
-        redirectUrl: "https://camunda.upgradingdave.com/optimize"
 
 operate:
   contextPath: "/operate"
